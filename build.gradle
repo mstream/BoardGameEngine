@@ -2,6 +2,7 @@ buildscript {
     ext {
         kotlinVer = '0.12.1230'
         junitVer = '4.12'
+        guavaVer = '18.0'
     }
     repositories {
         mavenCentral()
@@ -19,6 +20,7 @@ repositories {
 
 dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVer"
+    compile "com.google.guava:guava:$guavaVer"
     testCompile "junit:junit:$junitVer"
 }
 
