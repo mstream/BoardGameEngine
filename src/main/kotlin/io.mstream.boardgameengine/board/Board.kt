@@ -1,6 +1,6 @@
 package io.mstream.boardgameengine.board
 
-import io.mstream.boardgameengine.*
+import io.mstream.boardgameengine.Position
 
 class Board(val size: Int) {
 
@@ -13,6 +13,8 @@ class Board(val size: Int) {
     }
 
     fun isFieldFree(position: Position) = pieceAt(position) == null
+
+    fun isEmpty() = pieces.count() == 0
 
     fun isFull() = pieces.count() == size * size
 

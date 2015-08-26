@@ -1,7 +1,8 @@
 package io.mstream.boardgameengine.board
 
-import io.mstream.boardgameengine.*
-import org.junit.*
+import io.mstream.boardgameengine.Position
+import org.junit.Assert
+import org.junit.Test
 
 class BoardTest {
 
@@ -13,6 +14,23 @@ class BoardTest {
                 isWithinBounds)
         Assert.assertTrue("(3, 3) should be out of bounds",
                 isOutOfBounds)
+    }
+
+    @Test fun canCheckIfItIsEmpty() {
+        val board = Board(2)
+        val isEmptyWhenNotFilled = board.isEmpty()
+        board.putPieceAt(Piece("piece", Side.A), Position.fromCords(0, 0))
+        board.putPieceAt(Piece("piece", Side.B), Position.fromCords(1, 0))
+        val isEmptyWhenPartiallyFilled = board.isEmpty()
+        board.putPieceAt(Piece("piece", Side.A), Position.fromCords(0, 1))
+        board.putPieceAt(Piece("piece", Side.B), Position.fromCords(1, 1))
+        val isEmptyWhenCompletelyFilled = board.isEmpty()
+        Assert.assertTrue("should be empty when not filled",
+                isEmptyWhenNotFilled)
+        Assert.assertFalse("shouldn't be empty when partially filled",
+                isEmptyWhenPartiallyFilled)
+        Assert.assertFalse("shouldn't be empty when completely filled",
+                isEmptyWhenCompletelyFilled)
     }
 
     @Test fun canCheckIfItIsFull() {
