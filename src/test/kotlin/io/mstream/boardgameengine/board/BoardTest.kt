@@ -8,8 +8,8 @@ class BoardTest {
 
     @Test fun canCheckBounds() {
         val board = Board(2)
-        val isWithinBounds = board.isPositionInBounds(Position.fromCords(0, 0))
-        val isOutOfBounds = !board.isPositionInBounds(Position.fromCords(3, 3))
+        val isWithinBounds = board.isInBounds(Position.fromCords(0, 0))
+        val isOutOfBounds = !board.isInBounds(Position.fromCords(3, 3))
         Assert.assertTrue("(0, 0) should be within bounds",
                 isWithinBounds)
         Assert.assertTrue("(3, 3) should be out of bounds",

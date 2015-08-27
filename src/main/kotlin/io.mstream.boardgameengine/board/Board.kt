@@ -18,7 +18,7 @@ class Board(val size: Int) {
 
     fun isFull() = pieces.count() == size * size
 
-    fun isPositionInBounds(position: Position) =
+    fun isInBounds(position: Position) =
             position.x >= 0 && position.y >= 0
                     && position.x < size && position.y < size
 }
