@@ -12,6 +12,7 @@ class TicTacToe(eventSender: EventSender) : Game(eventSender) {
     private val circlePiece = Piece("circle", Side.B)
     private val board = Board(3)
 
+    private var isFinished = false
     private var sideToMove = Side.A
 
     override fun initialize() {
@@ -23,8 +24,10 @@ class TicTacToe(eventSender: EventSender) : Game(eventSender) {
             move !is Select                   -> return MoveResult.UNSUPPORTED
             !board.isInBounds(move.position)  -> return MoveResult.OUT_OF_BOUNDS
             !board.isFieldFree(move.position) -> return MoveResult.FIELD_OCCUPIED
-            else -> {
+            isFinished                        -> return MoveResult.GAME_IS_FINISHED
+            else                              -> {
                 board.putPieceAt(pieceOfMovingSide(), move.position)
+                checkFinishConditions()
                 sideToMove = sideToMove.opposite()
                 return MoveResult.CORRECT
             }
@@ -33,4 +36,13 @@ class TicTacToe(eventSender: EventSender) : Game(eventSender) {
 
     private fun pieceOfMovingSide() =
             if (sideToMove == Side.A) crossPiece else circlePiece
+
+    private fun checkFinishConditions() {
+        val lineChecker = LineChecker(board, 3)
+        isFinished = when {
+            board.isFull() -> true
+            lineChecker.lines().isNotEmpty() -> true
+            else -> false
+        }
+    }
 }

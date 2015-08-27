@@ -41,4 +41,17 @@ class TicTacToeMovementTest {
                 MoveResult.FIELD_OCCUPIED, moveResult)
     }
 
+    @Test fun shouldHandleMoveAfterGameEnd() {
+        val recordingEventSender = RecordingEventSender()
+        val ticTacToe = TicTacToe(recordingEventSender)
+        ticTacToe.makeMove(Select.fromCords(0, 0))
+        ticTacToe.makeMove(Select.fromCords(1, 0))
+        ticTacToe.makeMove(Select.fromCords(0, 1))
+        ticTacToe.makeMove(Select.fromCords(1, 1))
+        ticTacToe.makeMove(Select.fromCords(0, 2))
+        val moveResult = ticTacToe.makeMove(Select.fromCords(1, 2))
+        Assert.assertEquals("should return GameFinished when move was made after the game end",
+                MoveResult.GAME_IS_FINISHED, moveResult)
+    }
+
 }
