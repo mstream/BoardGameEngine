@@ -1,10 +1,9 @@
 package io.mstream.boardgameengine.game.tictactoe
 
+import io.mstream.boardgameengine.*
 import io.mstream.boardgameengine.board.*
 import io.mstream.boardgameengine.game.*
-import io.mstream.boardgameengine.move.Move
-import io.mstream.boardgameengine.move.MoveResult
-import io.mstream.boardgameengine.move.Select
+import io.mstream.boardgameengine.move.*
 
 class TicTacToe(eventSender: EventSender) : Game(eventSender) {
 
@@ -12,10 +11,8 @@ class TicTacToe(eventSender: EventSender) : Game(eventSender) {
     private val circlePiece = Piece("circle", Side.B)
     private val board = Board(3)
 
-    private var isFinished = false
-    private var sideToMove = Side.A
-
     override fun initialize() {
+        gameState = GameState.SIDE_A_IS_MOVING
         eventSender.post(BoardCreated(board.size))
     }
 
@@ -24,25 +21,49 @@ class TicTacToe(eventSender: EventSender) : Game(eventSender) {
             move !is Select                   -> return MoveResult.UNSUPPORTED
             !board.isInBounds(move.position)  -> return MoveResult.OUT_OF_BOUNDS
             !board.isFieldFree(move.position) -> return MoveResult.FIELD_OCCUPIED
-            isFinished                        -> return MoveResult.GAME_IS_FINISHED
+            !gameState.isStarted()            -> return MoveResult.GAME_NOT_STARTED
+            gameState.isFinished()            -> return MoveResult.GAME_IS_FINISHED
             else                              -> {
                 board.putPieceAt(pieceOfMovingSide(), move.position)
-                checkFinishConditions()
-                sideToMove = sideToMove.opposite()
+                updateState()
                 return MoveResult.CORRECT
             }
         }
     }
 
-    private fun pieceOfMovingSide() =
-            if (sideToMove == Side.A) crossPiece else circlePiece
-
-    private fun checkFinishConditions() {
-        val lineChecker = LineChecker(board, 3)
-        isFinished = when {
-            board.isFull() -> true
-            lineChecker.lines().isNotEmpty() -> true
-            else -> false
+    override fun possibleMoves(side: Side): Set<Move> {
+        var moves = emptySet<Move>()
+        for (x in 0..(board.size - 1)) {
+            for (y in 0..(board.size - 1)) {
+                val currentPosition = Position.fromCords(x, y)
+                if (board.isFieldFree(currentPosition)) {
+                    moves = moves
+                            .union(setOf(Select.fromPosition(currentPosition)))
+                }
+            }
         }
+        return moves
+    }
+
+    private fun pieceOfMovingSide() =
+            if (movingSide() == Side.A) crossPiece else circlePiece
+
+    private fun updateState() {
+        val lines = LineChecker(board, 3).lines()
+        when {
+            lines.isNotEmpty() -> gameState = GameState.victoryOf(winningSide(lines))
+            board.isFull()     -> gameState = GameState.DRAW
+            else               -> changePlayers()
+        }
+    }
+
+    private fun winningSide(lines: Set<Pair<Position, Position>>): Side {
+        if (lines.isEmpty()) {
+            throw IllegalArgumentException("lines can't be empty")
+        }
+        val startPosition = lines.first().first
+        val pieceAtStartPosition = board.pieceAt(startPosition) ?:
+                throw IllegalArgumentException("line doesn't contain all pieces")
+        return pieceAtStartPosition.side
     }
 }

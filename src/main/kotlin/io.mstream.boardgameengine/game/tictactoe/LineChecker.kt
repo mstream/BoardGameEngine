@@ -3,7 +3,7 @@ package io.mstream.boardgameengine.game.tictactoe
 import io.mstream.boardgameengine.*
 import io.mstream.boardgameengine.board.*
 
-class LineChecker(private val board: Board, private val winningLineLength: Int) {
+private class LineChecker(private val board: Board, private val winningLineLength: Int) {
 
     fun lines() =
             checkHorizontally()
