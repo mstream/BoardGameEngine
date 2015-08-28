@@ -45,6 +45,14 @@ class TicTacToe(eventSender: EventSender) : Game(eventSender) {
         return moves
     }
 
+    override fun evaluation(side: Side): Int {
+        return when {
+            gameState == GameState.victoryOf(side)            -> Int.MAX_VALUE
+            gameState == GameState.victoryOf(side.opposite()) -> Int.MIN_VALUE
+            else                                              -> 0
+        }
+    }
+
     private fun pieceOfMovingSide() =
             if (movingSide() == Side.A) crossPiece else circlePiece
 

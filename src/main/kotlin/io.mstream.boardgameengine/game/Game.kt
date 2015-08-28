@@ -12,6 +12,7 @@ abstract class Game(protected val eventSender: EventSender) {
     abstract fun makeMove(move: Move): MoveResult
 
     abstract fun possibleMoves(side: Side): Set<Move>
+    abstract fun evaluation(side: Side): Int
 
     protected fun changePlayers() {
         gameState = when (gameState) {
