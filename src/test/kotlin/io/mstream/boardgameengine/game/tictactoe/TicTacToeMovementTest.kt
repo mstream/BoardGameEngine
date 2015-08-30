@@ -9,7 +9,6 @@ class TicTacToeMovementTest {
     @Test fun shouldHandleValidMove() {
         val recordingEventSender = RecordingEventSender()
         val ticTacToe = TicTacToe(recordingEventSender)
-        ticTacToe.initialize()
         val moveResult = ticTacToe.makeMove(Select.fromCords(0, 0))
         Assert.assertTrue("should return CorrectMove when the game is ongoing and an empty field is selected",
                 moveResult.isCorrect())
@@ -18,7 +17,6 @@ class TicTacToeMovementTest {
     @Test fun shouldHandleUnsupportedMove() {
         val recordingEventSender = RecordingEventSender()
         val ticTacToe = TicTacToe(recordingEventSender)
-        ticTacToe.initialize()
         val moveResult = ticTacToe.makeMove(
                 Drag(Position.fromCords(0, 0), Position.fromCords(1, 1)))
         Assert.assertEquals("should return UnsupportedMove when drag move is ordered",
@@ -28,7 +26,6 @@ class TicTacToeMovementTest {
     @Test fun shouldHandleOutOfBoundsMove() {
         val recordingEventSender = RecordingEventSender()
         val ticTacToe = TicTacToe(recordingEventSender)
-        ticTacToe.initialize()
         val moveResult = ticTacToe.makeMove(Select.fromCords(5, 5))
         Assert.assertEquals("should return OutOfBoundsMove when non existing field is selected",
                 MoveResult.OUT_OF_BOUNDS, moveResult)
@@ -37,26 +34,15 @@ class TicTacToeMovementTest {
     @Test fun shouldHandleMoveAtOccupiedField() {
         val recordingEventSender = RecordingEventSender()
         val ticTacToe = TicTacToe(recordingEventSender)
-        ticTacToe.initialize()
         ticTacToe.makeMove(Select.fromCords(0, 0))
         val moveResult = ticTacToe.makeMove(Select.fromCords(0, 0))
         Assert.assertEquals("should return FieldOccupiedMove when non empty field is selected",
                 MoveResult.FIELD_OCCUPIED, moveResult)
     }
 
-    @Test fun shouldHandleMoveBeforeGameStarted() {
-        val recordingEventSender = RecordingEventSender()
-        val ticTacToe = TicTacToe(recordingEventSender)
-        ticTacToe.makeMove(Select.fromCords(0, 0))
-        val moveResult = ticTacToe.makeMove(Select.fromCords(0, 0))
-        Assert.assertEquals("should return GameNotStarted when move was made before the game started",
-                MoveResult.GAME_NOT_STARTED, moveResult)
-    }
-
     @Test fun shouldHandleMoveAfterGameEnd() {
         val recordingEventSender = RecordingEventSender()
         val ticTacToe = TicTacToe(recordingEventSender)
-        ticTacToe.initialize()
         ticTacToe.makeMove(Select.fromCords(0, 0))
         ticTacToe.makeMove(Select.fromCords(1, 0))
         ticTacToe.makeMove(Select.fromCords(0, 1))

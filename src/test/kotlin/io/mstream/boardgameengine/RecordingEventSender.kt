@@ -7,7 +7,7 @@ class RecordingEventSender : EventSender {
     var receivedEvents: List<Any> = emptyList()
 
     override fun post(event: Any) {
-        receivedEvents = receivedEvents.plus(event)
+        receivedEvents += event
     }
 }
 

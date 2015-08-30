@@ -1,15 +1,21 @@
 package io.mstream.boardgameengine.board
 
-import io.mstream.boardgameengine.Position
+import io.mstream.boardgameengine.*
 
 class Board(val size: Int) {
 
     private var pieces = emptyMap<Position, Piece>()
 
+    fun clone(): Board {
+        val clone = Board(size)
+        clone.pieces = pieces
+        return clone
+    }
+
     fun pieceAt(position: Position): Piece? = pieces.get(position)
 
     fun putPieceAt(piece: Piece, position: Position) {
-        pieces = pieces.plus(Pair(position, piece))
+        pieces += Pair(position, piece)
     }
 
     fun isFieldFree(position: Position) = pieceAt(position) == null

@@ -2,15 +2,13 @@ package io.mstream.boardgameengine.game.tictactoe
 
 import io.mstream.boardgameengine.*
 import io.mstream.boardgameengine.game.*
-import org.junit.Assert
-import org.junit.Test
+import org.junit.*
 
 class TicTacToeInitializationTest {
 
     @Test fun shouldCreateSizeOfThreeBoard() {
         val recordingEventSender = RecordingEventSender()
-        val ticTacToe = TicTacToe(recordingEventSender)
-        ticTacToe.initialize()
+        TicTacToe(recordingEventSender)
         val events = recordingEventSender.receivedEvents
         val boardCreatedEvents = events.filterIsInstance<BoardCreated>()
         Assert.assertEquals("should emit only one BoardCreated event",
@@ -22,8 +20,7 @@ class TicTacToeInitializationTest {
 
     @Test fun shouldCreateEmptyBoard() {
         val recordingEventSender = RecordingEventSender()
-        val ticTacToe = TicTacToe(recordingEventSender)
-        ticTacToe.initialize()
+        TicTacToe(recordingEventSender)
         val events = recordingEventSender.receivedEvents
         val pieceSetEvents = events.filterIsInstance<PieceSet>()
         Assert.assertTrue("shouldn't emit any PieceSet event",

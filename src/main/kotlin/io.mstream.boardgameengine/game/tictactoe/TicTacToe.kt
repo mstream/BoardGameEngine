@@ -5,14 +5,18 @@ import io.mstream.boardgameengine.board.*
 import io.mstream.boardgameengine.game.*
 import io.mstream.boardgameengine.move.*
 
-class TicTacToe(eventSender: EventSender) : Game(eventSender) {
+class TicTacToe(
+        eventSender: EventSender = NullEventSender,
+        board: Board = Board(3),
+        gameState: GameState = GameState.SIDE_A_IS_MOVING) :
+        Game(eventSender, board, gameState) {
 
-    private val crossPiece = Piece("cross", Side.A)
-    private val circlePiece = Piece("circle", Side.B)
-    private val board = Board(3)
+    companion object {
+        private val crossPiece = Piece("cross", Side.A)
+        private val circlePiece = Piece("circle", Side.B)
+    }
 
-    override fun initialize() {
-        gameState = GameState.SIDE_A_IS_MOVING
+    init {
         eventSender.post(BoardCreated(board.size))
     }
 
@@ -21,7 +25,6 @@ class TicTacToe(eventSender: EventSender) : Game(eventSender) {
             move !is Select                   -> return MoveResult.UNSUPPORTED
             !board.isInBounds(move.position)  -> return MoveResult.OUT_OF_BOUNDS
             !board.isFieldFree(move.position) -> return MoveResult.FIELD_OCCUPIED
-            !gameState.isStarted()            -> return MoveResult.GAME_NOT_STARTED
             gameState.isFinished()            -> return MoveResult.GAME_IS_FINISHED
             else                              -> {
                 board.putPieceAt(pieceOfMovingSide(), move.position)
@@ -31,27 +34,31 @@ class TicTacToe(eventSender: EventSender) : Game(eventSender) {
         }
     }
 
-    override fun possibleMoves(side: Side): Set<Move> {
+    override fun possibleMoves(): Set<Move> {
         var moves = emptySet<Move>()
-        for (x in 0..(board.size - 1)) {
-            for (y in 0..(board.size - 1)) {
-                val currentPosition = Position.fromCords(x, y)
-                if (board.isFieldFree(currentPosition)) {
-                    moves = moves
-                            .union(setOf(Select.fromPosition(currentPosition)))
+        if (gameState.isOngoing()) {
+            for (x in 0..(board.size - 1)) {
+                for (y in 0..(board.size - 1)) {
+                    val currentPosition = Position.fromCords(x, y)
+                    if (board.isFieldFree(currentPosition)) {
+                        moves = moves
+                                .union(setOf(Select.fromPosition(currentPosition)))
+                    }
                 }
             }
         }
         return moves
     }
 
-    override fun evaluation(side: Side): Int {
-        return when {
-            gameState == GameState.victoryOf(side)            -> Int.MAX_VALUE
-            gameState == GameState.victoryOf(side.opposite()) -> Int.MIN_VALUE
-            else                                              -> 0
+    override fun evaluation(): Int {
+        return when (gameState) {
+            GameState.victoryOf(Side.A) -> Int.MAX_VALUE
+            GameState.victoryOf(Side.B) -> Int.MIN_VALUE
+            else                        -> 0
         }
     }
+
+    override fun clone() = TicTacToe(NullEventSender, board.clone(), gameState)
 
     private fun pieceOfMovingSide() =
             if (movingSide() == Side.A) crossPiece else circlePiece
@@ -61,7 +68,7 @@ class TicTacToe(eventSender: EventSender) : Game(eventSender) {
         when {
             lines.isNotEmpty() -> gameState = GameState.victoryOf(winningSide(lines))
             board.isFull()     -> gameState = GameState.DRAW
-            else               -> changePlayers()
+            else               -> changeMovingSide()
         }
     }
 
