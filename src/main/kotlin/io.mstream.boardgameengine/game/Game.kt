@@ -10,8 +10,18 @@ abstract class Game(
 
     abstract fun makeMove(move: Move): MoveResult
     abstract fun possibleMoves(): Set<Move>
-    abstract fun evaluation(): Int
     abstract fun clone(): Game
+    protected abstract fun ongoingGameEvaluation(): Int
+
+    fun evaluation(): Int {
+        return when (gameState) {
+            GameState.victoryOf(Side.A) -> Int.MAX_VALUE
+            GameState.victoryOf(Side.B) -> Int.MIN_VALUE
+            GameState.DRAW              -> 0
+            else                        -> ongoingGameEvaluation()
+        }
+    }
+
 
     fun hasPossibleMoves() = possibleMoves().count() > 0
 

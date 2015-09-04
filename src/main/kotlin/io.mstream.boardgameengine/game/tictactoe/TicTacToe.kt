@@ -50,12 +50,26 @@ class TicTacToe(
         return moves
     }
 
-    override fun evaluation(): Int {
-        return when (gameState) {
-            GameState.victoryOf(Side.A) -> Int.MAX_VALUE
-            GameState.victoryOf(Side.B) -> Int.MIN_VALUE
-            else                        -> 0
+    override protected fun ongoingGameEvaluation(): Int {
+        var result = 0
+        for (x in 0..(board.size)) {
+            for (y in 0..(board.size)) {
+                val position = Position.fromCords(x, y)
+                val piece = board.pieceAt(position) ?: continue
+                val color = when {
+                    piece.side == Side.A -> 1
+                    piece.side == Side.B -> -1
+                    else                 -> 0
+                }
+                val value = when {
+                    x == 1 && y == 1           -> 3
+                    Math.abs(x) == Math.abs(y) -> 2
+                    else                       -> 1
+                }
+                result += color * value
+            }
         }
+        return result
     }
 
     override fun clone() = TicTacToe(NullEventSender, board.clone(), gameState)

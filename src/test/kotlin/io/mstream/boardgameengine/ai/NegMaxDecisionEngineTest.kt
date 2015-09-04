@@ -9,7 +9,7 @@ import org.junit.*
 class NegMaxDecisionEngineTest {
 
     @Test fun test() {
-        val negMax = NegMaxDecisionEngine(4)
+        val negMax = NegMaxDecisionEngine(2)
         val game = TestGame(Board(2), GameState.SIDE_A_IS_MOVING)
         var moves = emptyList<Move>()
         while (game.hasPossibleMoves()) {
@@ -61,9 +61,8 @@ class NegMaxDecisionEngineTest {
             return moves
         }
 
-        override fun evaluation(): Int {
-            return balance()
-        }
+        override fun ongoingGameEvaluation() = balance()
+
 
 
         override fun clone() = TestGame(board.clone(), gameState)
